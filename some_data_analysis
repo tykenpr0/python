@@ -4,13 +4,13 @@ import pandas as pd
 
 cool_temp = pd.read_csv("DATA/ITScans/WinCC_Data/NTC00/A-Side/coolingntc00a-side_2017.csv", index_col=["TS"], parse_dates = ["TS"])
 hv_current = pd.read_csv("DATA/ITScans/WinCC_Data/HVCurrents/A-Side/currenta-sidedata_2017.csv", index_col=["TS"], parse_dates = ["TS"])
-working_current = cool_temp.join( hv_current, how = "outer" )
 
+working_current = cool_temp.join( hv_current, how = "outer" )
 working_current = working_current.fillna(method='ffill')
 
 WC = working_current[["VEDCSHV:ELMB/VeloCanBus/VeloATempBoard1/AI/NTC_02.value", "VEHV:Iseg/can0/crate00/ma00/ch00.Actual.IMeas"]]
-WC = WC.fillna(method='bfill')
 
+WC = WC.fillna(method='bfill')
 WC = WC.loc[ WC['VEDCSHV:ELMB/VeloCanBus/VeloATempBoard1/AI/NTC_02.value'].values > -18 ]
 WC = WC.loc[ WC['VEDCSHV:ELMB/VeloCanBus/VeloATempBoard1/AI/NTC_02.value'].values < -16 ]
 WC = WC.loc[ WC['VEDCSHV:ELMB/VeloCanBus/VeloATempBoard1/AI/NTC_02.value'].diff().values > 0.05 ]
