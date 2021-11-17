@@ -1,0 +1,292 @@
+import pandas as pd
+
+postepowania = pd.read_csv("Postepowania.txt", delimiter = '\t')
+zamowienia = pd.read_csv("Zamowienia.txt", delimiter = '\t')
+umowy = pd.read_csv("Umowy.txt", delimiter = '\t')
+faktury = pd.read_csv("Faktury.txt", delimiter = '\t')
+
+postepowania['Wartość szacowana PLN'] = postepowania['Wartość szacowana PLN'].str.replace(',', '.').astype(float)
+zamowienia['Wartość zamówienia PLN'] = zamowienia['Wartość zamówienia PLN'].str.replace(',', '.').astype(float)
+umowy['Wartość umów PLN'] = umowy['Wartość umów PLN'].str.replace(',', '.').astype(float)
+faktury['Wartość faktur PLN'] = faktury['Wartość faktur PLN'].str.replace(',', '.').astype(float)
+
+dzial_1 = postepowania.loc[postepowania['Dział postępowań'] == 'Dział 1']
+dzial_2 = postepowania.loc[postepowania['Dział postępowań'] == 'Dział 2']
+dzial_3 = postepowania.loc[postepowania['Dział postępowań'] == 'Dział 3']
+dzial_4 = postepowania.loc[postepowania['Dział postępowań'] == 'Dział 4']
+
+index_18 = []
+index_19 = []
+index_20 = []
+index_21 = []
+
+
+for index, row in postepowania.iterrows():
+    if "2018" in row['Numer postępowania']:
+        index_18.append(index)
+    if "2019" in row['Numer postępowania']:
+        index_19.append(index)
+    if "2020" in row['Numer postępowania']:
+        index_20.append(index)
+    if "2021" in row['Numer postępowania']:
+        index_21.append(index)
+        
+post_2018 = postepowania.loc[ index_18 ]
+post_2019 = postepowania.loc[ index_19 ]
+post_2020 = postepowania.loc[ index_20 ]
+post_2021 = postepowania.loc[ index_21 ]
+
+post_2018_pelny = post_2018.loc[ post_2018['Tryb'] == "Pełny" ]
+post_2018_uproszczony = post_2018.loc[ post_2018['Tryb'] == "Uproszczony" ]
+post_2018_z_wolnej_reki = post_2018.loc[ post_2018['Tryb'] == "Z wolnej ręki" ]
+
+post_2019_pelny = post_2019.loc[ post_2019['Tryb'] == "Pełny" ]
+post_2019_uproszczony = post_2019.loc[ post_2019['Tryb'] == "Uproszczony" ]
+post_2019_z_wolnej_reki = post_2019.loc[ post_2019['Tryb'] == "Z wolnej ręki" ]
+
+post_2020_pelny = post_2020.loc[ post_2020['Tryb'] == "Pełny" ]
+post_2020_uproszczony = post_2020.loc[ post_2020['Tryb'] == "Uproszczony" ]
+post_2020_z_wolnej_reki = post_2020.loc[ post_2020['Tryb'] == "Z wolnej ręki" ]
+
+post_2021_pelny = post_2021.loc[ post_2021['Tryb'] == "Pełny" ]
+post_2021_uproszczony = post_2021.loc[ post_2021['Tryb'] == "Uproszczony" ]
+post_2021_z_wolnej_reki = post_2021.loc[ post_2021['Tryb'] == "Z wolnej ręki" ]
+
+umowy_ramowe = umowy.loc[ umowy['Typ umowy'] == "Ramowa" ]
+umowy_jednorazowa = umowy.loc[ umowy['Typ umowy'] == "Jednorazowa" ]
+umowy_owz = umowy.loc[ umowy['Typ umowy'] == "OWZ" ]
+umowy_skonkretyzowana = umowy.loc[ umowy['Typ umowy'] == "Skonkretyzowana" ]
+umowy_usuniete = umowy.loc[ umowy['Typ umowy'] == "Umowa usunięta" ]
+umowy_inne = umowy.loc[ umowy['Typ umowy'] == "Inne" ]
+
+w_umow_ramowe = 0
+w_umow_jednorazowa = 0
+w_umow_skonkretyzowana = 0
+w_umow_usuniete = 0
+w_umow_inne = 0
+w_umow_owz = 0
+
+for wartosc in umowy_ramowe['Wartość umów PLN']:
+    w_umow_ramowe += wartosc
+       
+for wartosc in umowy_jednorazowa['Wartość umów PLN']:
+    w_umow_jednorazowa += wartosc
+      
+for wartosc in umowy_owz['Wartość umów PLN']:
+    w_umow_owz += wartosc        
+
+for wartosc in umowy_skonkretyzowana['Wartość umów PLN']:
+    w_umow_skonkretyzowana += wartosc
+           
+for wartosc in umowy_usuniete['Wartość umów PLN']:
+    w_umow_usuniete += wartosc
+    
+for wartosc in umowy_inne['Wartość umów PLN']:
+    w_umow_inne += wartosc
+
+#szacowana wartosc postepowan w dziale 1
+w_post_1 = 0
+
+for kwota in dzial_1['Wartość szacowana PLN']:
+    w_post_1 += kwota
+    
+#szacowana wartosc postepowan w dziale 2
+w_post_2 = 0
+
+for kwota in dzial_2['Wartość szacowana PLN']:
+    w_post_2 += kwota
+
+#szacowana wartosc postepowan w dziale 3
+w_post_3 = 0
+
+for kwota in dzial_3['Wartość szacowana PLN']:
+    w_post_3 += kwota    
+    
+#szacowana wartosc postepowan w dziale 4
+w_post_4 = 0
+
+for kwota in dzial_4['Wartość szacowana PLN']:
+    w_post_4 += kwota 
+    
+dzial_1_u = list()
+dzial_2_u = list()
+dzial_3_u = list()
+dzial_4_u = list()
+
+for index, row in umowy.iterrows():
+    for nr_post_1 in dzial_1['Numer postępowania']:
+        if row['Nr postępowania'] == nr_post_1:
+            dzial_1_u.append(index)
+            
+            
+for index, row in umowy.iterrows():
+    for nr_post_2 in dzial_2['Numer postępowania']:
+        if row['Nr postępowania'] == nr_post_2:
+            dzial_2_u.append(index)
+
+for index, row in umowy.iterrows():
+    for nr_post_3 in dzial_3['Numer postępowania']:
+        if row['Nr postępowania'] == nr_post_3:
+            dzial_3_u.append(index)
+            
+for index, row in umowy.iterrows():
+    for nr_post_4 in dzial_4['Numer postępowania']:
+        if row['Nr postępowania'] == nr_post_4:
+            dzial_4_u.append(index)
+    
+umowy_1 = umowy.loc[ dzial_1_u ]
+umowy_2 = umowy.loc[ dzial_2_u ]
+umowy_3 = umowy.loc[ dzial_3_u ]
+umowy_4 = umowy.loc[ dzial_4_u ]
+
+w_umow_1 = 0
+w_umow_2 = 0
+w_umow_3 = 0
+w_umow_4 = 0
+
+#szacowana wartosc umow w dziale 1
+for wartosc in umowy_1['Wartość umów PLN']:
+    w_umow_1 += wartosc
+    
+#szacowana wartosc umow w dziale 2    
+for wartosc in umowy_2['Wartość umów PLN']:
+    w_umow_2 += wartosc
+    
+#szacowana wartosc umow w dziale 3    
+for wartosc in umowy_3['Wartość umów PLN']:
+    w_umow_3 += wartosc
+    
+#szacowana wartosc umow w dziale 4    
+for wartosc in umowy_4['Wartość umów PLN']:
+    w_umow_4 += wartosc
+    
+dzial_1_z = list()
+dzial_2_z = list()
+dzial_3_z = list()
+dzial_4_z = list()
+
+for nr_umowy in umowy_1['Nr umowy']:
+    for index, row in zamowienia.iterrows():
+        if nr_umowy == row['Nr umowy']:
+            dzial_1_z.append(index)
+            
+for nr_umowy in umowy_2['Nr umowy']:
+    for index, row in zamowienia.iterrows():
+        if nr_umowy == row['Nr umowy']:
+            dzial_2_z.append(index)
+            
+for nr_umowy in umowy_3['Nr umowy']:
+    for index, row in zamowienia.iterrows():
+        if nr_umowy == row['Nr umowy']:
+            dzial_3_z.append(index)
+            
+for nr_umowy in umowy_4['Nr umowy']:
+    for index, row in zamowienia.iterrows():
+        if nr_umowy == row['Nr umowy']:
+            dzial_4_z.append(index)
+
+zamowienia_1 = zamowienia.loc[ dzial_1_z ]
+zamowienia_2 = zamowienia.loc[ dzial_2_z ]
+zamowienia_3 = zamowienia.loc[ dzial_3_z ]
+zamowienia_4 = zamowienia.loc[ dzial_4_z ]
+
+w_zamowien_1 = 0
+w_zamowien_2 = 0
+w_zamowien_3 = 0
+w_zamowien_4 = 0
+
+#szacowana wartosc zamowien dla dzialu 1
+for wartosc in zamowienia_1['Wartość zamówienia PLN']:
+    w_zamowien_1 += wartosc
+    
+#szacowana wartosc zamowien dla dzialu 2
+for wartosc in zamowienia_2['Wartość zamówienia PLN']:
+    w_zamowien_2 += wartosc
+    
+#szacowana wartosc zamowien dla dzialu 3
+for wartosc in zamowienia_3['Wartość zamówienia PLN']:
+    w_zamowien_3 += wartosc
+    
+#szacowana wartosc zamowien dla dzialu 4
+for wartosc in zamowienia_4['Wartość zamówienia PLN']:
+    w_zamowien_4 += wartosc
+    
+index_2020_1 = []
+index_2020_2 = []
+index_2020_3 = []
+index_2020_4 = []
+
+
+for index, row in zamowienia_1.iterrows():
+    if "2020" in row['Planowana data dostawy']:
+        index_2020_1.append(index)
+        
+for index, row in zamowienia_2.iterrows():        
+    if "2020" in row['Planowana data dostawy']:
+        index_2020_2.append(index)
+        
+for index, row in zamowienia_3.iterrows():        
+    if "2020" in row['Planowana data dostawy']:
+        index_2020_3.append(index)
+        
+for index, row in zamowienia_4.iterrows():        
+    if "2020" in row['Planowana data dostawy']:
+        index_2020_4.append(index)
+        
+zamowienia_1_2020 = zamowienia_1.loc[index_2020_1]
+zamowienia_2_2020 = zamowienia_2.loc[index_2020_2]
+zamowienia_3_2020 = zamowienia_3.loc[index_2020_3]
+zamowienia_4_2020 = zamowienia_4.loc[index_2020_4]
+
+dzial_1_f_2020 = list()
+dzial_2_f_2020 = list()
+dzial_3_f_2020 = list()
+dzial_4_f_2020 = list()
+
+for nr_zamow in zamowienia_1_2020['Nr zamówienia']:
+    for index, row in faktury.iterrows():
+        if nr_zamow == row['Zamówienie']:
+            dzial_1_f_2020.append(index)
+            
+for nr_zamow in zamowienia_2_2020['Nr zamówienia']:
+    for index, row in faktury.iterrows():
+        if nr_zamow == row['Zamówienie']:
+            dzial_2_f_2020.append(index)
+            
+for nr_zamow in zamowienia_3_2020['Nr zamówienia']:
+    for index, row in faktury.iterrows():
+        if nr_zamow == row['Zamówienie']:
+            dzial_3_f_2020.append(index)
+            
+for nr_zamow in zamowienia_4_2020['Nr zamówienia']:
+    for index, row in faktury.iterrows():
+        if nr_zamow == row['Zamówienie']:
+            dzial_4_f_2020.append(index)
+            
+faktury_1 = faktury.loc[ dzial_1_f_2020 ]
+faktury_2 = faktury.loc[ dzial_2_f_2020 ]
+faktury_3 = faktury.loc[ dzial_3_f_2020 ]
+faktury_4 = faktury.loc[ dzial_4_f_2020 ]
+
+w_faktur_1 = 0
+w_faktur_2 = 0
+w_faktur_3 = 0
+w_faktur_4 = 0
+
+#szacowana wartosc zamowien dla dzialu 1
+for wartosc in faktury_1['Wartość faktur PLN']:
+    w_faktur_1 += wartosc
+    
+#szacowana wartosc zamowien dla dzialu 2
+for wartosc in faktury_2['Wartość faktur PLN']:
+    w_faktur_2 += wartosc
+    
+#szacowana wartosc zamowien dla dzialu 3
+for wartosc in faktury_3['Wartość faktur PLN']:
+    w_faktur_3 += wartosc
+    
+#szacowana wartosc zamowien dla dzialu 4
+for wartosc in faktury_4['Wartość faktur PLN']:
+    w_faktur_4 += wartosc
+    
+    
